@@ -21,29 +21,29 @@ Les contraintes pour cet affichage sont :
 #### Contenu :
 * Projet QGIS
 Les couches contenus dans ce projet sont les suivantes :
-..* lisiere
-..* v_observation_bordure
-..* v_observation_surface
-..* utilisation_sol
-..* etat_surface
-..* session
-..* v_mod_session
-..* observateur
-..* etat_session
+  * lisiere
+  * v_observation_bordure
+  * v_observation_surface
+  * utilisation_sol
+  * etat_surface
+  * session
+  * v_mod_session
+  * observateur
+  * etat_session
 
-Nous utilisons ici des vues pour la modélisation des parcelles et des bordures.
+   Nous utilisons ici des vues pour la modélisation des parcelles et des bordures.
 Ces vues contiennent les informations des observations courrante ou celles de la session précédente si il n'en existe pas.
 Ce sont ces vues qui seront éditées pour ajouter, modifier ou supprimer des observation sur l'interface Lizmap.
 
-Les autres couches sont présentes pour faire le lien entre les clés primaires et secondaires contenues dans la base de données et ainsi réaliser un affichage compréhensible.
+   Les autres couches sont présentes pour faire le lien entre les clés primaires et secondaires contenues dans la base de données et ainsi réaliser un affichage compréhensible.
 Ainsi utilisation_sol, etat_surface et session apportent les informations textuelles pour les observations, et v_mod_session, observateur et etat_session, les informations textuelles pour les sessions.
 
-Nous utilisons une symbologie pour les couches v_observation_surface et v_observation_bordure renseignant sur l'avancée du travail sur la session courante. Une couleur est choisie pour les observations réalisée et une autre pour celles qui ne le sont pas.
+   Nous utilisons une symbologie pour les couches v_observation_surface et v_observation_bordure renseignant sur l'avancée du travail sur la session courante. Une couleur est choisie pour les observations réalisée et une autre pour celles qui ne le sont pas.
 
 * Paramètres Lizmap
-Pour cette interface, nous avons besoin d'afficher à la carte les lisières, bordures et surface, nous gardons ainsi dans la légende les couches lisiere, v_observation_surface et v_observation_bordure. Nous activons les popups pour les bordures et les surfaces dont nous voulons connaître les observations. Nous ajoutons la session en table attributaire.
+   Pour cette interface, nous avons besoin d'afficher à la carte les lisières, bordures et surface, nous gardons ainsi dans la légende les couches lisiere, v_observation_surface et v_observation_bordure. Nous activons les popups pour les bordures et les surfaces dont nous voulons connaître les observations. Nous ajoutons la session en table attributaire.
 
-Pour finir, nous permettons l'édition et la suppression des couches v_observation_bordure, v_observation_surface et session.
+   Pour finir, nous permettons l'édition et la suppression des couches v_observation_bordure, v_observation_surface et session.
 
 
 Nous pouvons maintenant lancer l'interface sur le web, et visualiser nos couches, cliquer sur les entités et éditer des observations qui se mettrons à jour instantanément.
