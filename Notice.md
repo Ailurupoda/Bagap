@@ -1,3 +1,9 @@
+<style>
+	.alna {
+		text-indent:20px;
+	}
+</style>
+
 # Bagap - Bordure/Parcelle
 
 Détail de fonctionnement du projet, listing des actions réalisées sur la base de données et fonctionnement des interfaces créées.
@@ -7,8 +13,14 @@ Ce projet à pour but le suivi d'occupation et d'entretien de parcelle et de bor
 
 Une observation se fait sur une parcelle et une bordure à une date donnée décrite lors d'une session.
 
+### I)	SQL
+Les fichier update_keys.sql et view.sql lisent les modifications apportées à la base de données.
 
-### Interface terrain
+Le premier ajoute, modifie et supprime des champs et clés primaires/étrangères, puis met à jour les données.
+
+Le deuxième comporte la création des vues et des fonctions nécessaires au bon fonctionnement de la base de données et des interfaces liées.
+
+### II)	Interface terrain
 
 Cette interface est vouées à être utilisée sur le terrain.
 
@@ -31,7 +43,7 @@ Les couches contenus dans ce projet sont les suivantes :
   * observateur
   * etat_session
 
-   Nous utilisons ici des vues pour la modélisation des parcelles et des bordures.
+		Nous utilisons ici des vues pour la modélisation des parcelles et des bordures.
 Ces vues contiennent les informations des observations courrante ou celles de la session précédente si il n'en existe pas.
 Ce sont ces vues qui seront éditées pour ajouter, modifier ou supprimer des observation sur l'interface Lizmap.
 
@@ -48,3 +60,5 @@ Ainsi utilisation_sol, etat_surface et session apportent les informations textue
 
 Nous pouvons maintenant lancer l'interface sur le web, et visualiser nos couches, cliquer sur les entités et éditer des observations qui se mettrons à jour instantanément.
  en changeant de couleur.
+
+ ### III)	Interface bureau
