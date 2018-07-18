@@ -1,9 +1,3 @@
-<style>
-	.alna {
-		text-indent:20px;
-	}
-</style>
-
 # Bagap - Bordure/Parcelle
 
 Détail de fonctionnement du projet, listing des actions réalisées sur la base de données et fonctionnement des interfaces créées.

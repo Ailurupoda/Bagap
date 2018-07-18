@@ -1,8 +1,7 @@
-
---*************************************************************************************--
--- Fichier répertoriant les manipulations de la base pour la mettre en état de marche  --
---*************************************************************************************--
-
+---------------------------------------------------------------
+--Corentin FALCONE - 07/2018
+--Fichier répertoriant les modifications des tables de la base
+---------------------------------------------------------------
 
 
 --*************************************************************************
@@ -19,7 +18,6 @@ Drop Table IF EXISTS public.surface Cascade;
 Drop Table IF EXISTS public.utilisation_sol Cascade;
 Drop Table IF EXISTS public.bordure Cascade;
 */
-
 
 
 --*************************************************************************
@@ -193,32 +191,6 @@ Alter Table public.observation_surface drop column if exists obsurf_code;--Suppr
 --*************************************************************************
 	--Ajout de la colonne géométrie de la bordure
 Alter Table public.bordure Add Column bor_geom geometry(geometry, 2154);
-
-	--Création de la fonction attribuant la géométrie de la bordure
-/*CREATE OR REPLACE FUNCTION public.func_geom_bordure()
-  RETURNS integer AS
-$BODY$
-DECLARE
-		b1 public.bordure%ROWTYPE;
-    BEGIN
-    	FOR b1 in select * from bordure LOOP
-	        UPDATE public.bordure set bor_geom =  
-	        	(Select st_intersection(st_buffer(l.geom, 15), s.geom) 
-	    --Création d'une entité intersectée entre le buffer de la lisière (de la bordure )de 4m et la surface (de la bordure)
-					From public.bordure b
-					Join public.lisiere l on l.lis_id = b.bor_lisiere
-					Join public.surface s on s.surf_id = b.bor_surf
-					and b.bor_id = b1.bor_id
-			)
-	       	Where bor_id = b1.bor_id;
-		END LOOP;
-        RETURN 1;
-    END;
-$BODY$
-	LANGUAGE plpgsql VOLATILE;
-
-	--Lancement de la fonction d'attribution de la géométrie bordure
-Select func_geom_bordure();*/
 
 --********************************************
 --Création des index

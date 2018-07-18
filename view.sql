@@ -33,7 +33,7 @@ Join public.lisiere on lis_id = bor_lisiere
 Join public.surface on surf_id = bor_surf;
 
 	--Observation_bordure courante 
-		--Valeurs par défaut lorsque les données ne sont pas connues)
+		--Valeurs false lorsque les données ne sont pas connues
 CREATE OR REPLACE VIEW public.v_observation_bordure AS 
  SELECT 
  	COALESCE(ob.obsbrd_id, NULL::integer) AS vobs_id,
@@ -287,15 +287,3 @@ Grant INSERT on public.session to Terrain;
 GRANT EXECUTE on ALL functions in SCHEMA public to terrain;
 	--Attribution de l'utilisation des séquences
 GRANT USAGE on ALL sequences in schema public to terrain;
-
-
-
-
-
-
---delete from temp_bordure;
-	--Réalisation de la fonction
-select func_temp_bordure();
-
-	--Activation de la fonction
-Select public.func_create_bordure()

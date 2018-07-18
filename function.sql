@@ -460,15 +460,13 @@ CREATE TRIGGER tri_edit_from_obs
 
 
 --*********************************************************
---Trigger function updating view
+--Update observation_bordure (Insert/Update/Delete)
 --*********************************************************
-	--Update observation_bordure (Insert/Update/Delete)
 CREATE OR REPLACE FUNCTION obs_bord_maj() 
 	RETURNS TRIGGER AS 
 	--Fonction d'insertion/édition/suppression des données par une vue
 $$
 	BEGIN
-
 		IF (TG_OP = 'UPDATE') THEN
 			--Cas d'édition
 			IF NEW.vobs_id is null THEN
@@ -597,7 +595,12 @@ $$ LANGUAGE plpgsql;
 INSTEAD OF INSERT OR UPDATE OR DELETE ON v_observation_bordure
 FOR EACH ROW EXECUTE PROCEDURE obs_bord_maj();
 
-	--Update observation_surface (Insert/Update/Delete)
+
+
+--*********************************************************
+--Update observation_surface (Insert/Update/Delete)
+--*********************************************************
+
 CREATE OR REPLACE FUNCTION obs_surf_maj() 
 	RETURNS TRIGGER AS 
 	--Fonction d'insertion/edition/suppression d'observation surface par une vue
@@ -655,3 +658,13 @@ $$ LANGUAGE plpgsql;
 	CREATE TRIGGER tri_maj_obs_surface
 INSTEAD OF INSERT OR UPDATE OR DELETE ON v_observation_surface
 FOR EACH ROW EXECUTE PROCEDURE obs_surf_maj();
+
+
+
+--Lancement de la création de bordure 
+--delete from temp_bordure;
+	--Réalisation de la fonction
+select public.func_temp_bordure();
+
+	--Activation de la fonction
+Select public.func_create_bordure()
