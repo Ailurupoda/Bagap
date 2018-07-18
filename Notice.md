@@ -11,8 +11,8 @@ Une observation se fait sur une parcelle et une bordure à une date donnée déc
 
 Cette interface est vouées à être utilisée sur le terrain. 
 Les contraintes pour cet affichage sont :
-	..* Ajouter des observations dans le cas où une session est présente
-	..* Modifier seulement les observations de la session en cours
-	..* Afficher les observations de la dernière session
-	..* Suivre l'avancement du parcours sur le terrain
+..* Ajouter des observations dans le cas où une session est présente
+..* Modifier seulement les observations de la session en cours
+..* Afficher les observations de la dernière session
+..* Suivre l'avancement du parcours sur le terrain
 
