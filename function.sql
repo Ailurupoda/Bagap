@@ -11,9 +11,9 @@
 --/\**********************************************************/\
 
 --*********************************************************
---Fonction de création de géométrie bordure
+--1/ Fonction de création de géométrie bordure
 --*********************************************************
-CREATE OR REPLACE FUNCTION public.func_create_bordure()
+CREATE OR REPLACE FUNCTION public.fun_create_bordure()
 	RETURNS integer AS
 	--Fonction de création de la géométrie de bordures
 	--Calcul de la palce disponible entre deux lisière pour créer la bordure
@@ -89,10 +89,10 @@ $BODY$
 
 
 --*********************************************************
---Fonction de correction de la géométrie des bordures
+--2/ Fonction de correction de la géométrie des bordures
 --*********************************************************
--- DROP FUNCTION public.func_repare_bordure();
-CREATE OR REPLACE FUNCTION public.func_repare_bordure()
+-- DROP FUNCTION public.fun_repare_bordure();
+CREATE OR REPLACE FUNCTION public.fun_repare_bordure()
 	RETURNS integer AS
 	--Fonction de découpage des bordures pour enlever la supperposition
 	--Découpage de la plus petite bordure sur la plus grande
@@ -130,9 +130,9 @@ $BODY$
 
 
 --*********************************************************************************
---Fonction de gestion des activation de warning quand un commentaire est entré
+--3/ Fonction de gestion des activation de warning quand un commentaire est entré
 --*********************************************************************************
-Create Or Replace function func_warning() 
+Create Or Replace function public.fun_warning() 
 	Returns trigger as
 	--Fonction activant le warning lorsqu'un commentaire est entré 
 $BODY$
@@ -151,18 +151,18 @@ DROP TRIGGER if exists tri_check_warning on public.observation_bordure;
 DROP TRIGGER if exists tri_check_warning on public.session;
 CREATE Trigger tri_check_warning
 	BEFORE Insert or Update on public.observation_bordure
-	FOR EACH ROW EXECUTE Procedure func_warning();
+	FOR EACH ROW EXECUTE Procedure fun_warning();
 CREATE Trigger tri_check_warning
 	BEFORE Insert or Update on public.observation_surface
-	FOR EACH ROW EXECUTE Procedure func_warning();
+	FOR EACH ROW EXECUTE Procedure fun_warning();
 CREATE Trigger tri_check_warning
 	Before Insert or Update on public.session
-	FOR EACH ROW EXECUTE Procedure func_warning();
+	FOR EACH ROW EXECUTE Procedure fun_warning();
 
 --*********************************************************************************
---Function gestion des état session
+--4/ Function gestion des état session
 --*********************************************************************************
-Create Or Replace Function func_edit_session() 
+Create Or Replace Function public.fun_edit_session() 
 	Returns Trigger as 
 	--Fonction gérant la création de nouvelle sessions et la mise à jour des états
 	--Sens de fonctionnement : créée --> en cours --> à valider --> validée --> terminée
@@ -260,13 +260,14 @@ CREATE Trigger tri_check_session
 	BEFORE Insert or Update or Delete 
 	ON public.session
 	FOR EACH ROW 
-	EXECUTE Procedure func_edit_session();
+	EXECUTE Procedure fun_edit_session();
 
 
 --*********************************************************************************
---Function cloture session
+--5/ Function cloture session
 --*********************************************************************************
-Create Or Replace Function func_close_session() 
+
+Create Or Replace Function public.fun_close_session() 
 	Returns Trigger as
 	--Fonction finalisant la saisie sur le terrain en changeant l'état de la session automatiquement
 	--Lorsque toutes les observations sont saisies, la session change d'état 
@@ -323,18 +324,18 @@ CREATE Trigger tri_close_session
 	AFTER Insert 
 	ON public.observation_surface
 	FOR EACH ROW 
-	EXECUTE Procedure func_close_session();
+	EXECUTE Procedure fun_close_session();
 CREATE Trigger tri_close_session
 	AFTER Insert
 	ON public.observation_bordure
 	FOR EACH ROW 
-	EXECUTE Procedure func_close_session();
+	EXECUTE Procedure fun_close_session();
 
 
 --*********************************************************************************
---Function gestion de l'édition pour l'utilisateur terrain
+--6/ Function gestion de l'édition pour l'utilisateur terrain
 --*********************************************************************************
-Create Or Replace Function func_edit_terrain() 
+Create Or Replace Function public.fun_edit_terrain() 
 	Returns Trigger as
 	--Fonction gérant l'entrée de nouvelles données pour l'utilisateur sur le terrain
 	--L'utilisateur terrain en peu travailler que sur la session en cours
@@ -400,18 +401,18 @@ CREATE Trigger tri_edit_terrain
 	BEFORE Insert or Update or Delete 
 	ON public.observation_surface
 	FOR EACH ROW 
-	EXECUTE Procedure func_edit_terrain();
+	EXECUTE Procedure fun_edit_terrain();
 CREATE Trigger tri_edit_terrain
 	BEFORE Insert or Update or Delete 
 	ON public.observation_bordure
 	FOR EACH ROW 
-	EXECUTE Procedure func_edit_terrain();
+	EXECUTE Procedure fun_edit_terrain();
 
 
 --*********************************************************************************
---Function modification session créée --> en cours AUTO
+--7/ Function modification session créée --> en cours AUTO
 --*********************************************************************************
-CREATE OR REPLACE FUNCTION public.func_edit_from_obs()
+CREATE OR REPLACE FUNCTION public.fun_edit_from_obs()
 	RETURNS trigger AS
 	--Fonction modifiant l'état de la session créée lorsqu'une première observation est réalisée
 $BODY$
@@ -447,12 +448,12 @@ CREATE TRIGGER tri_edit_from_obs
 	AFTER INSERT
 	ON public.observation_bordure
 	FOR EACH ROW
-	EXECUTE PROCEDURE public.func_edit_from_obs();
+	EXECUTE PROCEDURE public.fun_edit_from_obs();
 CREATE TRIGGER tri_edit_from_obs
 	AFTER INSERT
 	ON public.observation_surface
 	FOR EACH ROW
-	EXECUTE PROCEDURE public.func_edit_from_obs();
+	EXECUTE PROCEDURE public.fun_edit_from_obs();
 
 
 -
@@ -460,9 +461,9 @@ CREATE TRIGGER tri_edit_from_obs
 
 
 --*********************************************************
---Update observation_bordure (Insert/Update/Delete)
+--8/ Update observation_bordure (Insert/Update/Delete)
 --*********************************************************
-CREATE OR REPLACE FUNCTION obs_bord_maj() 
+CREATE OR REPLACE FUNCTION public.fun_obs_bord_maj() 
 	RETURNS TRIGGER AS 
 	--Fonction d'insertion/édition/suppression des données par une vue
 $$
@@ -593,15 +594,15 @@ $$ LANGUAGE plpgsql;
 	
 	CREATE TRIGGER tri_maj_obs_bordure
 INSTEAD OF INSERT OR UPDATE OR DELETE ON v_observation_bordure
-FOR EACH ROW EXECUTE PROCEDURE obs_bord_maj();
+FOR EACH ROW EXECUTE PROCEDURE fun_obs_bord_maj();
 
 
 
 --*********************************************************
---Update observation_surface (Insert/Update/Delete)
+--9/ Update observation_surface (Insert/Update/Delete)
 --*********************************************************
 
-CREATE OR REPLACE FUNCTION obs_surf_maj() 
+CREATE OR REPLACE FUNCTION public.fun_obs_surf_maj() 
 	RETURNS TRIGGER AS 
 	--Fonction d'insertion/edition/suppression d'observation surface par une vue
 $$
@@ -660,11 +661,151 @@ INSTEAD OF INSERT OR UPDATE OR DELETE ON v_observation_surface
 FOR EACH ROW EXECUTE PROCEDURE obs_surf_maj();
 
 
+--*********************************************************
+--10/ Création d'un historique de parcelles fusionnées
+--*********************************************************
+Create or Replace Function public.fun_tri_intersect_fusion()
+	Returns trigger AS
+	--Fonction trigger d'insertion des parcelles dans les fusion et rafraichissement de la VM
+$BODY$
+	Declare
+		v_surf integer; --Surface pointée par la fusion
+		v_surf_ref integer; --Surface contenant les informations à récupérer pour les vues
+	Begin
+		IF TG_OP = 'INSERT' THEN
+			--Cas d'insert
+			IF NEW.hf_surf_id IS NULL THEN
+				--Cas de surface null : définition de la surface
+				Select hf_surf_ref
+					From histo_fusion
+					Where hf_num_union = NEW.hf_num_union
+					LIMIT 1
+				INTO v_surf_ref; -- Récupération de la surface référence
+				IF v_surf_ref IS NULL THEN
+					--Cas surface référence inexistante
+					Select surf_id
+						From surface, histo_fusion 
+						Where st_intersects(NEW.hf_geom, surf_geom)
+					INTO v_surf_ref;--Création de la surface référence
+				END IF;
+				Select surf_id
+					From surface, histo_fusion 
+					Where st_intersects(NEW.hf_geom, surf_geom)
+				INTO v_surf;--Récupération de la surface pointée
+				UPDATE histo_fusion
+					--Mise à jour de la table
+					Set 
+						hf_surf_id = v_surf,
+						hf_surf_ref = v_surf_ref
+					Where NEW.hf_id = hf_id;
+			END IF;
+		ELSIF TG_OP = 'UPDATE' THEN
+			--Cas d'update
+			IF NEW.hf_geom = OLD.hf_geom IS NULL THEN
+				--Cas de changement de géométrie
+				Select hf_surf_ref
+					From histo_fusion
+					Where hf_num_union = NEW.hf_num_union
+					LIMIT 1
+				INTO v_surf_ref;--Récupération de la référence
+				IF v_surf_ref IS NULL THEN
+					--Cas référence null
+					Select surf_id
+						From surface, histo_fusion 
+						Where st_intersects(NEW.hf_geom, surf_geom)
+					INTO v_surf_ref;--Création de la référence
+				END IF;
+				Select surf_id
+					From surface, histo_fusion 
+					Where st_intersects(NEW.hf_geom, surf_geom)
+				INTO v_surf;--Récupération 
+				UPDATE histo_fusion
+					Set 
+						hf_surf_id = v_surf,
+						hf_surf_ref = v_surf_ref
+					Where NEW.hf_id = hf_id;
+			END IF;				
+		END IF;
+		REFRESH MATERIALIZED VIEW mv_fusion_surface;
+		Return NEW;
+		
+	END;
+$BODY$
+	LANGUAGE 'plpgsql';
+
+--*********************************************************
+--11/ Insertion des observations depuis les parcelles fusionnées
+--*********************************************************
+Create or Replace function public.fun_tri_obs_fusion()
+	Returns trigger AS
+	--Fonction récupérant les données de l'observation de la parcelle fusionnée
+	--Insert les données dans les parcelles concernées
+	--Supprime les données dans les parcelles concernées
+$body$
+	Declare
+		s public.surface.surf_id%type; --Id surfaces parcourue
+	Begin
+		IF (TG_OP = 'UPDATE') THEN
+			--Cas UDPATE
+			RAISE NOTICE '%', TG_OP;
+			IF NEW.vobs_id IS NULL OR NEW.vobs_id = 0 THEN
+				--Cas inexistant (INSERT)
+				For s in Select hf_surf_id From histo_fusion Where hf_surf_ref = OLD.hf_surf_ref LOOP
+					INSERT INTO public.observation_surface(warning, 
+															commentaires, 
+															hauteur
+	,														code_etat_surface,
+															code_utilisation_sol,
+															obs_id_surface,
+															id_session)
+					VALUES
+						(NEW.warning, 
+							NEW.commentaires, 
+							NEW.hauteur,
+							NEW.code_etat_surface,
+							NEW.code_utilisation_sol,
+							s,
+							NEW.id_session);
+				END LOOP;
+
+					RETURN NEW;
+			ELSE
+				--Cas existant (UPDATE)
+				For s in Select hf_surf_id From histo_fusion Where hf_surf_ref = OLD.hf_surf_ref LOOP
+					UPDATE observation_surface
+						SET warning = NEW.warning, 
+							commentaires = NEW.commentaires, 
+							hauteur = NEW.hauteur,
+							code_etat_surface = NEW.code_etat_surface,
+							code_utilisation_sol = NEW.code_utilisation_sol,
+							id_session = NEW.id_session
+					WHERE obs_id_surface = s AND id_session = NEW.id_session;
+				END LOOP;
+				RETURN NEW;
+			END IF;
+
+	   	ELSIF (TG_OP = 'DELETE') THEN
+	   		--Cas DELETE
+	   		For s in Select hf_surf_id From histo_fusion Where hf_surf_ref = OLD.hf_surf_ref LOOP
+				DELETE FROM observation_surface where obs_id_surface = s AND id_session = OLD.id_session;
+			END LOOP;
+			RETURN OLD;
+	   	END IF;
+	   	RETURN NEW;
+	End;
+$body$
+	LANGUAGE 'plpgsql';
+
+Create trigger tri_surface_fusion 
+INSTEAD of Update Or Delete on public.v_observation_fusion
+FOR EACH ROW EXECUTE Procedure fun_tri_obs_fusion();
+
+
 
 --Lancement de la création de bordure 
 --delete from temp_bordure;
 	--Réalisation de la fonction
-select public.func_temp_bordure();
+select public.fun_temp_bordure();
 
 	--Activation de la fonction
-Select public.func_create_bordure()
+Select public.fun_create_bordure()

@@ -26,6 +26,7 @@ Drop Table IF EXISTS public.bordure Cascade;
 	--Bordure
 Alter Table public.bordure rename column id to bor_code; --L'ancien ID devient un code
 Alter Table public.bordure add column bor_id serial;--Nouvel ID
+Alter Table public.bordure add column bor_actif boolean Default TRUE;-- Spécifie l'activité de la bordure
 
 	--Etat_session
 Alter Table public.etat_session add column etses_id serial;--Ajout d'un ID etat session
@@ -49,6 +50,7 @@ Alter Table public.observation_surface add column obsurf_id serial;--Nouvel ID
 	--surface
 Alter Table public.surface rename column id to surf_code;--L'ancien ID devient un code
 Alter Table public.surface add column surf_id serial;--Nouvel ID
+Alter Table public.bordure add column surf_actif boolean Default TRUE;--Spécifie l'activité de la surface
 
 
 --*************************************************************************
@@ -90,7 +92,8 @@ Update public.bordure
 						Where surf_code = id_surface), -- Récupération des identifiants ID correspondant aux codes
 		bor_lisiere = (Select lis_id
 							From public.lisiere
-							Where lis_code = id_lisiere);-- Récupération des identifiants ID correspondant aux codes
+							Where lis_code = id_lisiere),-- Récupération des identifiants ID correspondant aux codes
+		bor_actif = TRUE; -- Génération de l'activité de la bordure
 
 Update public.observation_bordure
 	Set obs_id_bordure = (Select bor_id
@@ -104,6 +107,8 @@ Update public.session
 		ses_observateur = (Select obs_id
 							From public.observateur
 							Where obs_code = id_observateur);-- Récupération des identifiants ID correspondant aux codes
+Update public.surface
+	Set surf_actif = TRUE; --Génération de l'activité de la surface
 
 
 --*************************************************************************
@@ -262,3 +267,67 @@ $BODY$
 ALTER TABLE public.observation_surface ALTER COLUMN id_session SET DEFAULT (func_curr_session());
 ALTER TABLE public.observation_bordure ALTER COLUMN id_session SET DEFAULT (func_curr_session());
 
+
+--*************************************************************************
+-- Ajout de la table de fusion de parcelles
+--*************************************************************************
+Create table histo_fusion ( --Table répertoriant les parcelles à fusionner pour le terrain
+	hf_id serial,
+	hf_geom geometry(point, 2154),
+	hf_num_union integer default (fun_num_fusion()),
+	hf_date date DEFAULT current_date,
+	hf_surf_id integer,--Id de la surface concernée
+	hf_surf_ref integer,--Id de la surface référence
+	Constraint pk_histo_fusion Primary Key (hf_id)
+);
+	--Fonction pour ajouter une valeur par défaut 
+Create or Replace Function fun_num_fusion()
+	Returns integer AS
+--Fonction servant de valeur par défaut pour la fusion des parcelles
+$BODY$
+	Declare
+		num integer;
+	Begin
+		Select max(hf_num_union)
+			From histo_fusion
+		Into num;
+
+		Return num;
+	END;
+$BODY$
+	LANGUAGE 'plpgsql';
+
+
+--*************************************************************************
+--Gestion utilisateur
+--*************************************************************************
+	--Création d'un utilisateur terrain
+Create User Terrain;
+	--Ajout d'un mot de passe à l'utilisateur
+ALTER USER Terrain WITH PASSWORD 'terrain';
+		
+--Attribution du droit de visualisation de toutes les données
+Grant Select On All Tables in Schema public to Terrain;
+	-- Attribution de l'insertion et édition sur la table observation_surface
+Grant UPDATE on public.observation_surface to Terrain;
+Grant INSERT on public.observation_surface to Terrain;
+Grant DELETE on public.observation_surface to Terrain;
+
+Grant UPDATE on public.v_observation_surface to Terrain;
+Grant INSERT on public.v_observation_surface to Terrain;
+Grant DELETE on public.v_observation_surface to Terrain;
+	-- Attribution de l'insertion et édition sur la table observation_bordure
+Grant UPDATE on public.observation_bordure to Terrain;
+Grant INSERT on public.observation_bordure to Terrain;
+Grant DELETE on public.observation_bordure to Terrain;
+
+Grant UPDATE on public.v_observation_bordure to Terrain;
+Grant INSERT on public.v_observation_bordure to Terrain;
+Grant DELETE on public.v_observation_bordure to Terrain;
+	-- Attribution de l'insertion et édition sur la table session
+Grant UPDATE on public.session to Terrain;
+Grant INSERT on public.session to Terrain;
+	--Attribution de l'utilisation des fonctions
+GRANT EXECUTE on ALL functions in SCHEMA public to terrain;
+	--Attribution de l'utilisation des séquences
+GRANT USAGE on ALL sequences in schema public to terrain;
