@@ -7,8 +7,13 @@ Détail de fonctionnement du projet, listing des actions réalisées sur la base
 Ce projet à pour but le suivi d'occupations et d'entretiens de parcelles et de bordures.
 
 Une observation se fait sur une parcelle et une bordure à une date donnée décrite lors d'une session.
+## Sommaire
+* [SQL](#sql)
+* [Interface Terrain](#field)
+* [Interface Bureau](#dektop)
 
-### I)	SQL
+### I) <a id="sql">SQL</a>
+***
 Les fichier *__update_keys.sql__*, *__view.sql__*, *__function.sql__* et *__trigger_maj_bordure.sql__* listent les modifications apportées à la base de données.
 
 * **update_keys.sql** réorganise la base de données en ajoutant, modifiant et supprimant des colonnes et des contraintes sur les tables.
@@ -86,9 +91,9 @@ Les fichier *__update_keys.sql__*, *__view.sql__*, *__function.sql__* et *__trig
 
   Cette fonction rend possible l'édition d'une vue. Elle détourne l'insertion de la vue "v_observation_fusion" vers la table "observation_surface".
 
-![Titre](bagap_MLD.png)
-### II)	Interface terrain
-
+![MLD](bagap_MLD.png)
+### II)	Interface terrain <a id="field">Field</a>
+***
 Cette interface est vouées à être utilisée sur le terrain.
 
 Les contraintes pour cet affichage sont :
@@ -97,35 +102,146 @@ Les contraintes pour cet affichage sont :
 * Afficher les observations de la dernière session
 * Suivre l'avancement du parcours sur le terrain
 
-#### Contenu :
-* Projet QGIS
+#### Projet QGIS
 Les couches contenus dans ce projet sont les suivantes :
-  * lisiere
-  * v_observation_bordure
-  * v_observation_surface
-  * utilisation_sol
-  * etat_surface
-  * session
-  * v_mod_session
-  * observateur
-  * etat_session
 
-		Nous utilisons ici des vues pour la modélisation des parcelles et des bordures.
-Ces vues contiennent les informations des observations courrante ou celles de la session précédente si il n'en existe pas.
-Ce sont ces vues qui seront éditées pour ajouter, modifier ou supprimer des observation sur l'interface Lizmap.
 
-   Les autres couches sont présentes pour faire le lien entre les clés primaires et secondaires contenues dans la base de données et ainsi réaliser un affichage compréhensible.
-Ainsi utilisation_sol, etat_surface et session apportent les informations textuelles pour les observations, et v_mod_session, observateur et etat_session, les informations textuelles pour les sessions.
 
-   Nous utilisons une symbologie pour les couches v_observation_surface et v_observation_bordure renseignant sur l'avancée du travail sur la session courante. Une couleur est choisie pour les observations réalisée et une autre pour celles qui ne le sont pas.
+<table>
+  <tr>
+    <td rowspan=11>
+      ![MLD](/ScreenShot/Terrain/01_liste_couches.png)
+    </td>
+    <td>
+      **<span style='color:#96CA2D'>lisiere :</span>** Affichage géographique des lisières.    
+    </td>
+  </tr>
+  <tr>
+    <td>
+      **<span style='color:#046380'>v_observation_bordure :</span>** Affichage géographique des observation de bordures de la session courante.
+    </td>
+  </tr>
+  <tr>
+    <td>
+      **<span style='color:#046380'>v_observation_fusion :</span>** Affichage géographique des observation de surfaces fusionnées.
+    </td>
+  </tr>
+  <tr>
+    <td>
+      **<span style='color:#046380'>v_observation_surface:</span>** Affichage géographique des observation de surfaces courante ou de la dernière session.
+    </td>
+  </tr>
+  <tr>
+    <td>
+      **<span style='color:#E6E2AF'>mv_zone: </span>** Affichage géographique des trois zones de suivi.
+    </td>
+  </tr>
+  <tr>
+    <td>
+      **<span style='color:#01B0F0'>utilisation_sol :</span>** Couche donnant les valeurs relationnelles des types d'utilisation et d'occupation du sol.
+    </td>
+  </tr>
+  <tr>
+    <td>
+      **<span style='color:#01B0F0'>etat_surface:</span>** Couche donnant les valeurs relationnelles des types d'état d'une surface.
+    </td>
+  </tr>
+  <tr>
+    <td>
+      **<span style='color:#BD8D46'>session :</span>** Couche donnant l'information sur l'état des sessions. Seulement les deux dernières sont prises en compte.
+    </td>
+  </tr>
+  <tr>
+    <td>
+      **<span style='color:#8E3557'>v_mod_session :</span>** Couche donnant les valeurs sous forme de libellé pour l'affichage des sessions dans la table attributaire. Cette couche est jointe à la couche session.
+    </td>
+  </tr>
+  <tr>
+    <td>
+      **<span style='color:#01B0F0'>observateur :</span>** Couche donnant les valeurs relationnelles des observateurs d'une session.
+    </td>
+  </tr>
+  <tr>
+    <td>
+      **<span style='color:#01B0F0'>etat_session :</span>** Couche donnant les valeurs relationnelles des états d'une session.
+    </td>
+  </tr>
+</table>
 
-* Paramètres Lizmap
+  * <span style='color:#96CA2D'> Entités géographiques présentes pour la reconnaissance du terrain.</span>
+
+  * <span style='color:#046380'>  Entités présentes pour l'ajout d'information par modification de la base de données de façon géographique.</span>
+
+  * <span style='color:#E6E2AF'>  Entités présentes pour zoomer rapidement sur les entités voulues.</span>
+
+  * <span style='color:#01B0F0'>  Entités présentes pour afficher les valeurs relationnelles sous forme de libellé dans les popups et formulaires d'édition.</span>
+
+  * <span style='color:#BD8D46'>  Entités présentes pour donner des informations supplémentaires et non géographiques.</span>
+
+  * <span style='color:#8E3557'>  Entités présentes pour afficher les valeurs relationnelles sous forme de libellé dans la table attributaire. </span>
+
+###### Paramétrage des champs
+L'affichage dans lizmap utilise les paramètres de QGIS. Nous allons donc définir les champs que nous voulons voir dans les popups et les formulaires d'édition. Pour ce faire, nous allons dans les ** *propriétés de la couche* ** puis dans l'onglet ** *Champs * **
+* *Session*
+
+Les session vont être affichées sous forme de table attributaire, nous avons donc besoin d'ajouter une jointure pour récupérer les champs sous forme de libellés. Cette couche est également éditable, tous les champs doivent donc apparaître dans une popup.
+
+![MLD](/ScreenShot/Terrain/02_session_champs.png)
+
+  1. Champs provenant de la jointure qui seront affichés dans la table attributaire de Lizmap
+  2. Champs cachés à l'utilisateur mais prenant des valeurs automatiquement dans la base de données
+  3. Champs à afficher pour l'utilisateur avec un Alias compréhensible et des valeurs relationnelles ajoutés pour remplacer les champs clés étrangères par des libellés
+
+
+* *Observation bordures*
+
+  Les observations de bordure seront simplement afficher à l'aide de popups et éditables. La couche contenant des champs booléens, il faut les afficher sous la forme de case à cocher et donner en alias des noms pertinents. De plus, la table contient un grand nombre de champs, nous décidons donc de les regrouper par des onglets à l'affichage. De la même façon que la session des champs vont rester caché du fait qu'ils ne sont pas utiles à l'utilisateur, mais important tout de même pour la base de données.
+
+![MLD](/ScreenShot/Terrain/03_v_obs_bordure_champs.png)
+
+1. Mise en forme de boîte à cocher avec comme valeur TRUE (coché) et FALSE (décoché)
+2. Organisation du formulaire par cliquer/glisser sous forme d'onglets
+
+* *Observation surface*
+
+  Les couches fusion et surface possèdent les mêmes type d'entité, leur paramétrage est ainsi identique. Nous utilisons le cliquer/glisser pour n'afficher que les champs qui nous intéressent. Nous utilisons également les valeurs relationnelles, cachées, boîte à cocher vues précédemment.
+
+![MLD](/ScreenShot/Terrain/05_v_obs_surface_champs.png)
+
+###### Paramétrage de la symbologie
+  La symbologie est importante pour une meilleure visualisation de l'avancement du travail. Sur l'interface dédiée au terrain, nous voulons pouvoir repérer d'un coup d'oeil le travail que nous venons d'effectuer. Nous recherchons donc ici à différencier les données à enregistrer des données déjà présentes. La symbologie se fera donc sur les couches concernant les observations (de bordure et de surface). Afin de ne pas mélanger les entités, nous donnons deux couple de couleur différentes, une pour les bordures et l'autre pour les parcelles.
+
+![MLD](/ScreenShot/Terrain/06_v_obs_bordure_style.png)
+1.  Remplissage vert clair pour indiquer les observation réalisée pour la session en en cours
+1.  Remplissage rouge pour les observations qui ne sont pas encore renseignées pour la session courante.
+
+![MLD](/ScreenShot/Terrain/07_v_obs_surface_style.png)
+1.  Remplissage bleu pour les observations qui ne sont pas réalisée et pour contraster avec le vert des bordures.
+1.  Remplissage rouge pour les observations qui ne sont pas encore réalisées. Les points noir sont présent pour contraster la symbologie des bordures.
+
+
+#### Paramètres Lizmap
    Pour cette interface, nous avons besoin d'afficher à la carte les lisières, bordures et surface, nous gardons ainsi dans la légende les couches lisiere, v_observation_surface et v_observation_bordure. Nous activons les popups pour les bordures et les surfaces dont nous voulons connaître les observations. Nous ajoutons la session en table attributaire.
 
    Pour finir, nous permettons l'édition et la suppression des couches v_observation_bordure, v_observation_surface et session.
+###### Paramétrage des actions
+   ![MLD](/ScreenShot/Terrain/08_param_liz_carte.png)
 
+   ![MLD](/ScreenShot/Terrain/09_param_edition.png)
+
+   ![MLD](/ScreenShot/Terrain/10_param_attributaire.png)
+
+   ![MLD](/ScreenShot/Terrain/11_param_locate_zone.png)
+
+###### Paramétrage de l'affichage
+
+   ![MLD](/ScreenShot/Terrain/12_param_bordure_config.png)
+
+   ![MLD](/ScreenShot/Terrain/13_param_fusion_config.png)
+
+   ![MLD](/ScreenShot/Terrain/14_param_surface_config.png)
 
 Nous pouvons maintenant lancer l'interface sur le web, et visualiser nos couches, cliquer sur les entités et éditer des observations qui se mettrons à jour instantanément.
  en changeant de couleur.
 
- ### III)	Interface bureau
+### III)	Interface bureau <a id="desktop"></a>
