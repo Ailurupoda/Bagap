@@ -1,12 +1,15 @@
 
-# Bagap - Bordure/Parcelle
+# <p style="text-align: center;"> Suivi de bordures et de parcelles</p>
+### <p style="text-align: center;"> UMR Bagap - Saint-Laurent-de-la-Prée</p>
 
-Détail de fonctionnement du projet, listing des actions réalisées sur la base de données et fonctionnement des interfaces créées.
 
 ## Introduction
 Ce projet à pour but le suivi d'occupations et d'entretiens de parcelles et de bordures.
 
-Une observation se fait sur une parcelle et une bordure à une date donnée décrite lors d'une session.
+Une observation se fait sur une parcelle et une bordure à une date donnée décrite lors d'une session. La donnée est récupérée sur le terrain, puis vérifiée et validée de retour au bureau.
+
+Cette notice détail la démarche et le fonctionnement des applications créées utilisant les logiciel Lizmap, Postgres/Postgis, QGIS et QGIS Server. Développé avec la méthode GeoPoppy pour son utilisation sur le terrain.
+
 ## <a id="up"> Sommaire </a>
 * [SQL](#sql)
   * [Base](#base)
@@ -26,15 +29,17 @@ Une observation se fait sur une parcelle et une bordure à une date donnée déc
 
 Les fichier *__update_keys.sql__*, *__view.sql__*, *__function.sql__* et *__trigger_maj_bordure.sql__* listent les modifications apportées à la base de données.
 
-* <a id="base"> **update_keys.sql** </a> réorganise la base de données en ajoutant, modifiant et supprimant des colonnes et des contraintes sur les tables.
+#### <a id="pqgisF"> A - update_keys.sql </a>
+
+Réorganise la base de données en ajoutant, modifiant et supprimant des colonnes et des contraintes sur les tables.
   * Ajout des champs de géométrie
   * Modification des clé primaires et étrangères
   * Mise à jour des données en fonction des nouvelles contraintes
   * Ajout de la table histo_fusion listant les entités à fusionner
   * Ajout d'un utilisateur "Terrain" pour une modification des observation seulement sur la session courante.
 
-
-* <a id="view"> **view.sql**</a> créé les vues utilisées pour les interfaces.
+#### <a id="pqgisF"> B - view.sql </a>
+Créé les vues utilisées pour les interfaces.
   * *mv_zone*
 
   Cette vue créé et liste la géométrie des zones par l'union des parcelles de chacune des zones (connues par la première lettre de leur code).
@@ -63,8 +68,8 @@ Les fichier *__update_keys.sql__*, *__view.sql__*, *__function.sql__* et *__trig
 
   Cette vue matérialiser liste les géométries des parcelles qui ont fusionnées.
 
-
-* <a id="func"> **function.sql** </a> cré les fonctions de calcul et d'insertion.
+#### <a id="pqgisF"> C - function.sql </a>
+Créé les fonctions de calcul et d'insertion.
   * *fun_create_bordure()*
 
  Cette fonction est utilisée une seule fois et permet la création de la géométrie des bordures. La géométrie d'une bordure correspond alors à un buffer de la lisière coupé par rapport à la parcelle correspondante à la bordure.
@@ -103,8 +108,7 @@ Les fichier *__update_keys.sql__*, *__view.sql__*, *__function.sql__* et *__trig
 
 ![MLD](bagap_MLD.png)
 ***
-### <a id="field">II)	Interface terrain</a>
-[UP](#up)
+### <a id="field">II)	Interface terrain</a>`    `[up](#up)
 
 Cette interface est vouées à être utilisée sur le terrain.
 
@@ -114,77 +118,39 @@ Les contraintes pour cet affichage sont :
 * Afficher les observations de la dernière session
 * Suivre l'avancement du parcours sur le terrain
 
-  #### <a id="pqgisF"> A - Projet QGIS </a>
-[UP](#up)
+
+#### <a id="pqgisF"> A - Projet QGIS </a>`    `[up](#up)
 
 Les couches contenus dans ce projet sont les suivantes :
+<img src="/ScreenShot/Field/01_liste_couches.png" width="30%">
 
-<table>
-  <tr>
-    <td rowspan=11>
-      ![MLD](/ScreenShot/Field/01_liste_couches.png)
-    </td>
-    <td>
-      **<span style='color:#96CA2D'>lisiere :</span>** Affichage géographique des lisières.    
-    </td>
-  </tr>
-  <tr>
-    <td>
-      **<span style='color:#046380'>v_observation_bordure :</span>** Affichage géographique des observation de bordures de la session courante.
-    </td>
-  </tr>
-  <tr>
-    <td>
-      **<span style='color:#046380'>v_observation_fusion :</span>** Affichage géographique des observation de surfaces fusionnées.
-    </td>
-  </tr>
-  <tr>
-    <td>
-      **<span style='color:#046380'>v_observation_surface:</span>** Affichage géographique des observation de surfaces courante ou de la dernière session.
-    </td>
-  </tr>
-  <tr>
-    <td>
-      **<span style='color:#E6E2AF'>mv_zone: </span>** Affichage géographique des trois zones de suivi.
-    </td>
-  </tr>
-  <tr>
-    <td>
-      **<span style='color:#01B0F0'>utilisation_sol :</span>** Couche donnant les valeurs relationnelles des types d'utilisation et d'occupation du sol.
-    </td>
-  </tr>
-  <tr>
-    <td>
-      **<span style='color:#01B0F0'>etat_surface:</span>** Couche donnant les valeurs relationnelles des types d'état d'une surface.
-    </td>
-  </tr>
-  <tr>
-    <td>
-      **<span style='color:#BD8D46'>session :</span>** Couche donnant l'information sur l'état des sessions. Seulement les deux dernières sont prises en compte.
-    </td>
-  </tr>
-  <tr>
-    <td>
-      **<span style='color:#8E3557'>v_mod_session :</span>** Couche donnant les valeurs sous forme de libellé pour l'affichage des sessions dans la table attributaire. Cette couche est jointe à la couche session.
-    </td>
-  </tr>
-  <tr>
-    <td>
-      **<span style='color:#01B0F0'>observateur :</span>** Couche donnant les valeurs relationnelles des observateurs d'une session.
-    </td>
-  </tr>
-  <tr>
-    <td>
-      **<span style='color:#01B0F0'>etat_session :</span>** Couche donnant les valeurs relationnelles des états d'une session.
-    </td>
-  </tr>
-</table>
+* __<span style='color:#96CA2D'>lisiere :</span>__ Affichage géographique des lisières.    
+
+* __<span style='color:#046380'>v_observation_bordure :</span>__ Affichage géographique des observation de bordures de la session courante.
+
+* __<span style='color:#046380'>v_observation_fusion :</span>__ Affichage géographique des observation de surfaces fusionnées.
+
+* __<span style='color:#046380'>v_observation_surface:</span>__ Affichage géographique des observation de surfaces courante ou de la dernière session.
+
+* __<span style='color:#333333'>mv_zone: </span>__ Affichage géographique des trois zones de suivi.
+
+* __<span style='color:#01B0F0'>utilisation_sol :</span>__ Couche donnant les valeurs relationnelles des types d'utilisation et d'occupation du sol.
+
+* __<span style='color:#01B0F0'>etat_surface:</span>__ Couche donnant les valeurs relationnelles des types d'état d'une surface.
+
+* __<span style='color:#BD8D46'>session :</span>__ Couche donnant l'information sur l'état des sessions. Seulement les deux dernières sont prises en compte.
+
+* __<span style='color:#8E3557'>v_mod_session :</span>__ Couche donnant les valeurs sous forme de libellé pour l'affichage des sessions dans la table attributaire. Cette couche est jointe à la couche session.
+
+* __<span style='color:#01B0F0'>observateur :</span>__ Couche donnant les valeurs relationnelles des observateurs d'une session.
+
+* __<span style='color:#01B0F0'>etat_session :</span>__ Couche donnant les valeurs relationnelles des états d'une session.
 
   * <span style='color:#96CA2D'> Entités géographiques présentes pour la reconnaissance du terrain.</span>
 
   * <span style='color:#046380'>  Entités présentes pour l'ajout d'information par modification de la base de données de façon géographique.</span>
 
-  * <span style='color:#E6E2AF'>  Entités présentes pour zoomer rapidement sur les entités voulues.</span>
+  * <span style='color:#333333'>  Entités présentes pour zoomer rapidement sur les entités voulues.</span>
 
   * <span style='color:#01B0F0'>  Entités présentes pour afficher les valeurs relationnelles sous forme de libellé dans les popups et formulaires d'édition.</span>
 
@@ -193,7 +159,7 @@ Les couches contenus dans ce projet sont les suivantes :
   * <span style='color:#8E3557'>  Entités présentes pour afficher les valeurs relationnelles sous forme de libellé dans la table attributaire. </span>
 
 ###### Paramétrage des champs
-L'affichage dans lizmap utilise les paramètres de QGIS. Nous allons donc définir les champs que nous voulons voir dans les popups et les formulaires d'édition. Pour ce faire, nous allons dans les ** *propriétés de la couche* ** puis dans l'onglet ** *Champs * **
+L'affichage dans lizmap utilise les paramètres de QGIS. Nous allons donc définir les champs que nous voulons voir dans les popups et les formulaires d'édition. Pour ce faire, nous allons dans les *__propriétés de la couche__* puis dans l'onglet *__Champs__*
 * *Session*
 
 Les session vont être affichées sous forme de table attributaire, nous avons donc besoin d'ajouter une jointure pour récupérer les champs sous forme de libellés. Cette couche est également éditable, tous les champs doivent donc apparaître dans une popup.
@@ -233,24 +199,23 @@ La symbologie est importante pour une meilleure visualisation de l'avancement du
 1.  Remplissage bleu pour les observations qui ne sont pas réalisée et pour contraster avec le vert des bordures.
 2.  Remplissage rouge pour les observations qui ne sont pas encore réalisées. Les points noir sont présent pour contraster la symbologie des bordures.
 
-  #### <a id="plizmapF"> B - Paramètres Lizmap </a>
-  [UP](#up)
+#### <a id="plizmapF"> B - Paramètres Lizmap </a>`    `[up](#up)
 
 Cette interface doit permettre la modification des observations sur les parcelles et sur les bordures. Il doit aussi rendre possible la modification de l'état de la session une fois que celle-ci est finie.
 
 ###### Paramétrage des actions
 * Edition
 
-Nous ajoutons les couches éditable dans l'onglet ** *'Édition des couches'* ** .
-Pour chacune des couches, nous cochons l'option ** *'Modifier les attributs'* ** ainsi que ** *'Supprimer'* ** , excepté pour la couche session.
+Nous ajoutons les couches éditable dans l'onglet *__'Édition des couches'__* .
+Pour chacune des couches, nous cochons l'option *__'Modifier les attributs'__* ainsi que *__'Supprimer'__* , excepté pour la couche session.
 
    ![MLD](/ScreenShot/Field/09_param_edition.png)
 
 * Table attributaire
 
-Ajouter les couches dans l'onglet ** *'Table attributaire'* ** permet d'afficher les données des couches dans un tableau sur l'interface. C'est aussi en les ajoutant dans cet onglet, que l'on peut utiliser le trie par localisation de la couche, ainsi que les relations parent/enfant qui filtrent les enfants en fonction de l'entité parent.
+Ajouter les couches dans l'onglet *__'Table attributaire'__* permet d'afficher les données des couches dans un tableau sur l'interface. C'est aussi en les ajoutant dans cet onglet, que l'on peut utiliser le trie par localisation de la couche, ainsi que les relations parent/enfant qui filtrent les enfants en fonction de l'entité parent.
 
-Ici, nous voulons simplement visualiser les données de la table session, mais nous ajoutons aussi la table mv_zone en cochant l'option ** *'Masquer la couche dans la liste'* ** puisque nous n'avons pas besoin de voir les données, mais nous utilisons la localisation sur la couche.
+Ici, nous voulons simplement visualiser les données de la table session, mais nous ajoutons aussi la table mv_zone en cochant l'option *__'Masquer la couche dans la liste'__* puisque nous n'avons pas besoin de voir les données, mais nous utilisons la localisation sur la couche.
 
 
    ![MLD](/ScreenShot/Field/10_param_attributaire.png)
@@ -263,7 +228,7 @@ La localisation par couche permet de filtrer les données d'une couche en foncti
 
 ###### <a id="affich"> Paramétrage de l'affichage </a>
 
-La configuration de l'affichage se fait dans l'onglet ** *'Couches'* ** du plugin Lizmap dans la partie ** *'Popup'* ** de la couche sélectionnée. En sélectionnant 'lizmap' comme source, il est possible de modifier les informations à afficher par la popup avec un balisage HTML. Cela est utile pour embellir l'affichage, ou pour ne montrer que certains champs.
+La configuration de l'affichage se fait dans l'onglet *__'Couches'__* du plugin Lizmap dans la partie *__'Popup'__* de la couche sélectionnée. En sélectionnant 'lizmap' comme source, il est possible de modifier les informations à afficher par la popup avec un balisage HTML. Cela est utile pour embellir l'affichage, ou pour ne montrer que certains champs.
 
 Ici nous souhaitons avoir une vision simplifier des champs des couches d'observation. Nous utilisons un tableau avec des fonds de couleur intercalés une fois sur deux et les valeurs booléennes sont en majuscule.
 
@@ -282,7 +247,84 @@ Ici nous souhaitons avoir une vision simplifier des champs des couches d'observa
    ![MLD](/ScreenShot/Field/14_param_surface_config.png)
 
 
-  #### <a id="usesF"> C - Utilisations </a>
+#### <a id="usesF"> C - Utilisations </a>
+
+Cet application est très simple à utiliser, nous allons voir les différentes fonctionnalités et comment les atteindre.
+
+Les premiers éléments à regarder sont les couches géographiques, nous avons Lisière, Bordures, Surfaces et les parcelles fusionnées. Ces dernières ont la même symbologie que Surfaces puisqu'elles complètent les informations.
+
+<p style="text-align:center;">
+![MLD](/ScreenShot/Field/Uses/01_couches.png)
+</p>
+
+La partie filtrant les différentes zones est très simple d'utilisation. Il suffit de choisir dans le cadre "Locating" la lettre concernant notre zone. Ici nous avons sélectionné la A, ce qui a centré la carte et détouré la zone en jaune.
+
+<p style="text-align:center;">
+![MLD](/ScreenShot/Field/Uses/02_loc.png)
+</p>
+
+Nous passons maintenant au fonctionnement de l'ajout des observations sur nos parcelles. Nous pouvons dors et déjà voir en bleu les parcelles sur lesquelles nous avont déjà réalisé nos observations lors de la session. Nous nous penchons donc sur une parcelle en rouge pour notifier l'observation.
+
+En cliquant sur la parcelle, celle-ci est détourée en jaune et une popup s'ouvre à gauche de l'écran, nous renseignant sur le contenu actuel de la parcelle.
+Nous pouvons ainsi constater le numéro, la session, un commentaire, l'état et l'occupation du sol. Ces informations concernent alors bien la session précédente.
+
+Nous allons donc passer à l'édition de l'information en cliquant sur le bouton en forme de crayon.
+
+<p style="text-align:center;">
+![MLD](/ScreenShot/Field/Uses/03_click_parcelle.png)
+</p>
+
+Le formulaire d'édition remplace de fait la popup et on y retrouve exactement les mêmes informations. Nous pouvons ainsi modifier l'état, l'occupation et la hauteur, modifier le commentaire. Il faut bien penser à changer la session, sans quoi, l'édition n'aura pas lieu et une erreur apparaîtra.
+
+<p style="text-align:center;">
+![MLD](/ScreenShot/Field/Uses/04_edit_parcelle.png)
+</p>
+
+Un fois la donnée sauvegarder en cliquant sur le bouton "save", nous pouvons voir à l'écran que la couleur à changer et est passé au bleu. De plus un message nous signalant que la donnée a bien été sauvegardée est visible en haut de l'écran.
+
+<p style="text-align:center;">
+![MLD](/ScreenShot/Field/Uses/05_fin_parcelle.png)
+</p>
+Nous suivons le même procédé pour le renseignement sur les bordures. En la sélectionnant, elle devient entouré de jaune et la popup s'affiche contenant toutes les informations actuelle. Pour les bordures coloré de rouge, les données sont des valeurs par défaut à faux et à la session courante, mais aucune n'est réellement présente dans la base de donnée actuellement.
+
+![MLD](/ScreenShot/Field/Uses/06_click_bordure.png)
+
+Lorsque l'on souhaite effectuer une édition sur une bordure, le formulaire se présente sous la forme de cinq onglet. Le premier comprenant les renseignement basique de la bordure.
+
+![MLD](/ScreenShot/Field/Uses/07_edit_bor_1.png)
+
+Ensuite, les onglets vont regrouper les informations en thème pour orienter l'utilisateur sur la donnée qu'il cherche à rentrer, sans qu'il ait besoin de faire défiler le formulaire indéfiniment.
+
+<p style="text-align:center;">
+![MLD](/ScreenShot/Field/Uses/08_edit_bor_2.png)![MLD](/ScreenShot/Field/Uses/09_edit_bor_3.png)
+</p>
+
+<p style="text-align:center;">
+![MLD](/ScreenShot/Field/Uses/10_edit_bor_4.png)![MLD](/ScreenShot/Field/Uses/11_edit_bor_5.png)
+</p>
+
+Une fois sauvegarder, la bordure devient verte et signale ainsi que la donnée est bien sauvegardée et qu'il est possible de poursuivre notre saisie.
+
+<p style="text-align:center;">
+  ![MLD](/ScreenShot/Field/Uses/12_fin_bordure.png)
+</p>
+
+Une fois les observations réalisée sur toutes les parcelles et bordures (plus aucun morceau de rouge ne se trouve sur la carte), la session passe automatiquement à 'à valider', ce qui met fin à l'application terrain pour cette session.
+
+Il est cependant possible de visualiser les deux dernières session et de modifier l'état de la session courante. Pour ce faire, dans l'onglet "data" il faut cliquer sur le bouton à côté de "Session".
+
+<p style="text-align:center;">
+  ![MLD](/ScreenShot/Field/Uses/13_session.png)
+</p>
+Il est alors possible de cliquer sur le bouton d'édition, ce qui ouvre le formulaire pour modifier les champs. Lors de cet étape, il est ainsi possible de modifier l'état pour qu'il soit "en cours" ou ""à valider", selon si on a besoin de revenir en arrière ou de forcer la fin du travail.
+
+<p style="text-align:center;">
+  ![MLD](/ScreenShot/Field/Uses/14_edit_session.png)
+</p>
+
+
+
+
 
 Avec cette interface, nous pouvons nous diriger sur le terrain et saisir simplement les données concernant les entretiens des bordures et l'état des parcelles.
 
@@ -290,9 +332,7 @@ Avec cette interface, nous pouvons nous diriger sur le terrain et saisir simplem
 
 
 ***
-### <a id="desktop">III) Interface bureau</a>
-[UP](#up)
-
+### <a id="desktop">III) Interface bureau</a>`    `[up](#up)
 Cette interface est vouées à être utilisée au bureau.
 
 Les contraintes pour cet affichage sont :
@@ -304,140 +344,79 @@ Les contraintes pour cet affichage sont :
 * Pouvoir fusionner des parcelles entre elles
 * Visualiser la totalité des données
 
-  #### <a id="pqgisD"> A - Projet QGIS</a>
-[UP](#up)
+#### <a id="pqgisD"> A - Projet QGIS</a> `    `[up](#up)
 
-<table>
-  <tr>
-    <td rowspan=23>
-      ![MLD](/ScreenShot/Desktop/01_liste_couches.png)
-    </td>
-    <td>
-      **<span style='color:#E6E2AF'>histo_fusion :</span>** Affichage ponctuel des parcelles fusionnées.    
-    </td>
-  </tr>
-  <tr>
-    <td>
-      **<span style='color:#96CA2D'>lisiere :</span>** Affichage géographique des lisières.
-    </td>
-  </tr>
-  <tr>
-    <td>
-      **<span style='color:#046380'>Strate herbacée :</span>** Affichage géographique des observations de bordures dont les entretiens correspondent à la partie herbacée.
-    </td>
-  </tr>
-  <tr>
-    <td>
-      **<span style='color:#046380'>Strate arbustive :</span>** Affichage géographique des observations de bordures dont les entretiens correspondent à la partie arbustive.
-    </td>
-  </tr>
-  <tr>
-    <td>
-      **<span style='color:#046380'>Strate arborée:</span>** Affichage géographique des observations de bordures dont les entretiens correspondent à la partie arborée.
-    </td>
-  </tr>
-  <tr>
-    <td>
-      **<span style='color:#046380'>Haie: </span>** Affichage géographique des observations de bordures dont les entretiens correspondent à la partie haie.
-    </td>
-  </tr>
-  <tr>
-    <td>
-      **<span style='color:#046380'>Autre :</span>** Affichage géographique des observations de bordures n'ayant pas d'entretiens observé.
-    </td>
-  </tr>
-  <tr>
-    <td>
-      **<span style='color:#046380'>Surface ocs:</span>** Affichage géographique des observations de surfaces catégorisé suivant l'occupation du sol.
-    </td>
-  </tr>
-  <tr>
-    <td>
-      **<span style='color:#046380'>Surface etats :</span>** Affichage géographique des observations de surfaces catégorisé suivant l'état.
-    </td>
-  </tr>
-  <tr>
-    <td>
-      **<span style='color:#96CA2D'>bordure :</span>** Affichage des bordures afin de les modifier ou d'en ajouter.
-    </td>
-  </tr>
-  <tr>
-    <td>
-      **<span style='color:#96CA2D'>surface :</span>** Affichage des surfaces dans le but de les modifier ou d'en ajouter.
-    </td>
-  </tr>
-  <tr>
-    <td>
-      **<span style='color:#E6E2AF'>mv_zone :</span>** Affichage géographique des trois zones de suivi.
-    </td>
-  </tr>
-  <tr>
-    <td>
-      **<span style='color:#BD8D46'>session_old :</span>** Couche donnant l'information sur l'état des sessions. Seulement les deux dernières sont prises en compte.
-    </td>
-  </tr>
-  <tr>
-    <td>
-      **<span style='color:#01B0F0'>observateur :</span>** Couche donnant les valeurs relationnelles des observateurs d'une session.
-    </td>
-  </tr>
-  <tr>
-    <td>
-      **<span style='color:#8E3557'>v_mod_session :</span>** Couche donnant les valeurs sous forme de libellé pour l'affichage des sessions dans la table attributaire. Cette couche est jointe à la couche session.
-    </td>
-  </tr>
-  <tr>
-    <td>
-      **<span style='color:#01B0F0'>etat_session :</span>** Couche donnant les valeurs relationnelles des états d'une session.
-    </td>
-  </tr>
-  <tr>
-    <td>
-      **<span style='color:#BD8D46'>observation_bordure :</span>** Couche donnant les informations des observations des bordure pour chaque session.
-    </td>
-  </tr>
-  <tr>
-    <td>
-      **<span style='color:#8E3557'>v_mod_bordure :</span>** Couche donnant les valeurs relationnelles des observations de bordure.
-    </td>
-  </tr>
-  <tr>
-    <td>
-      **<span style='color:#8E3557'>v_mod_observation_bordure :</span>** Couche donnant les valeurs relationnelles des observations de bordure.
-    </td>
-  </tr>
-  <tr>
-    <td>
-      **<span style='color:#BD8D46'>observation_surface:</span>** Couche donnant les informations des observations des parcelles pour chaque session.
-    </td>
-  </tr>
-  <tr>
-    <td>
-      **<span style='color:#01B0F0'>etat_surface :</span>** Couche donnant les valeurs relationnelles des types d'état d'une surface.
-    </td>
-  </tr>
-  <tr>
-    <td>
-      **<span style='color:#01B0F0'>utilisation_sol :</span>** Couche donnant les valeurs relationnelles des types d'utilisation et d'occupation du sol.
-    </td>
-  </tr>
-  <tr>
-    <td>
-      **<span style='color:#8E3557'>v_mod_observation_surface :</span>** Couche donnant les valeurs relationnelles des observations de parcelle.
-    </td>
-  </tr>
-</table>
+<img src="/ScreenShot/Desktop/01_liste_couches.png" width="30%">
+
+* __<span style='color:#333333'>histo_fusion :</span>__ Affichage ponctuel des parcelles fusionnées.    
+
+* __<span style='color:#96CA2D'>lisiere :</span>__ Affichage géographique des lisières.
+
+* __<span style='color:#046380'>Strate herbacée :</span>__ Affichage géographique des observations de bordures dont les entretiens correspondent à la partie herbacée.
+
+* __<span style='color:#046380'>Strate arbustive :</span>__ Affichage géographique des observations de bordures dont les entretiens correspondent à la partie arbustive.
+
+* __<span style='color:#046380'>Strate arborée:</span>__ Affichage géographique des observations de bordures dont les entretiens correspondent à la partie arborée.
+
+* __<span style='color:#046380'>Haie: </span>__ Affichage géographique des observations de bordures dont les entretiens correspondent à la partie haie.
+
+* __<span style='color:#046380'>Autre :</span>__ Affichage géographique des observations de bordures n'ayant pas d'entretiens observé.
+
+* __<span style='color:#046380'>Surface ocs:</span>__ Affichage géographique des observations de surfaces catégorisé suivant l'occupation du sol.
+
+* __<span style='color:#046380'>Surface etats :</span>__ Affichage géographique des observations de surfaces catégorisé suivant l'état.
+
+* __<span style='color:#96CA2D'>bordure :</span>__ Affichage des bordures afin de les modifier ou d'en ajouter.
+
+* __<span style='color:#96CA2D'>surface :</span>__ Affichage des surfaces dans le but de les modifier ou d'en ajouter.
+
+* __<span style='color:#333333'>mv_zone :</span>__ Affichage géographique des trois zones de suivi.
+
+* __<span style='color:#BD8D46'>session_old :</span>__ Couche donnant l'information sur l'état des sessions. Seulement les deux dernières sont prises en compte.
+
+* __<span style='color:#01B0F0'>observateur :</span>__ Couche donnant les valeurs relationnelles des observateurs d'une session.
+
+* __<span style='color:#8E3557'>v_mod_session :</span>__ Couche donnant les valeurs sous forme de libellé pour l'affichage des sessions dans la table attributaire. Cette couche est jointe à la couche session.
+
+* __<span style='color:#01B0F0'>etat_session :</span>__ Couche donnant les valeurs relationnelles des états d'une session.
+
+* __<span style='color:#BD8D46'>observation_bordure :</span>__ Couche donnant les informations des observations des bordure pour chaque session.
+
+* __<span style='color:#8E3557'>v_mod_bordure :</span>__ Couche donnant les valeurs relationnelles des observations de bordure.
+
+* __<span style='color:#8E3557'>v_mod_observation_bordure :</span>__ Couche donnant les valeurs relationnelles des observations de bordure.
+
+* __<span style='color:#BD8D46'>observation_surface:</span>__ Couche donnant les informations des observations des parcelles pour chaque session.
+
+* __<span style='color:#01B0F0'>etat_surface :</span>__ Couche donnant les valeurs relationnelles des types d'état d'une surface.
+
+* __<span style='color:#01B0F0'>utilisation_sol :</span>__ Couche donnant les valeurs relationnelles des types d'utilisation et d'occupation du sol.
+
+* __<span style='color:#8E3557'>v_mod_observation_surface :</span>__ Couche donnant les valeurs relationnelles des observations de parcelle.
+
+  * <span style='color:#333333'> Entités géographiques améliorant l'interprétation des données.</span>
+
+  * <span style='color:#96CA2D'> Entités géographiques présentes pour la reconnaissance du terrain.</span>
+
+  * <span style='color:#046380'>  Entités géographique présentes pour l'ajout d'information par modification de la base de données de façon géographique.</span>
+
+  * <span style='color:#BD8D46'>  Entités donnant des informations supplémentaires non géographiques.</span>
+
+  * <span style='color:#01B0F0'>  Entités présentes pour afficher les valeurs relationnelles sous forme de libellé dans les popups et formulaires d'édition.</span>
+
+  * <span style='color:#8E3557'>  Entités présentes pour afficher les valeurs relationnelles sous forme de libellé dans la table attributaire. </span>
+
 
 Pour cet interface, nous utilisons des liens parent/enfant. Nous l'utilisons d'une part pour effectuer des tris par session et d'autre part pour regrouper les observations par parcelles et visualiser son avancement.
 
 ![MLD](/ScreenShot/Desktop/02_relation_qgis.png)
 
 Les relations ainsi créées concernent les couches d'observation. Chaque catégorie d'observation de bordure est reliée à la couche session, ce qui va rendre dynamique l'affichage des observations sur la carte en fonction des sessions. Il en est de même pour les deux symbologies des observations de parcelles.
-De plus, les couche ** *'observation_bordure'* ** et ** *'observation_surface'* ** sont liées respectivement aux couches ** *'bordure'* ** et ** *'surface'* ** .
+De plus, les couche *__'observation_bordure'__* et *__'observation_surface'__* sont liées respectivement aux couches *__'bordure'__* et *__'surface'__* .
 
-Les couches ** *'Strate herbacée'* ** , ** *'Strate arbustive'* ** , ** *'Strate arborée'* ** , ** *'Haie'* ** et ** *'Autre'* ** proviennent de la vue ** *'v_observation_bordure'* ** et sont filtrées dans QGIS en fonction de la valeur des champs provenant de la catégorie respective.
+Les couches *__'Strate herbacée'__* , *__'Strate arbustive'__* , *__'Strate arborée'__* , *__'Haie'__* et *__'Autre'__* proviennent de la vue *__'v_observation_bordure'__* et sont filtrées dans QGIS en fonction de la valeur des champs provenant de la catégorie respective.
 
-Les couches ** *'Surface ocs'* ** et ** *'Surface etats'* ** proviennent de la vue ** *'v_observation_surface'* ** .
+Les couches *__'Surface ocs'__* et *__'Surface etats'__* proviennent de la vue *__'v_observation_surface'__* .
 
 ###### Paramétrage des champs
 Les champs sont paramétrés de la même façon que pour l'interface Terrain. Les observations pouvant être visualisées par table attributaire, nous ajoutons une vue qui, par jointure renseigne les valeurs relationnelles. La couche histo_fusion est aussi ajoutée pour fusionner les parcelles pour adapter le modèle à la réalité.
@@ -460,7 +439,7 @@ Cette interface doit avoir une symbologie plus poussée que pour le terrain. En 
 
 * Strate herbacée
 
-![MLD](/ScreenShot/Desktop/08_obs_bord_style herba.png)
+![MLD](/ScreenShot/Desktop/08_obs_bord_style_herba.png)
 
 * Strate arbustive
 
@@ -490,8 +469,7 @@ Les entités de la couche fusion sont catégorisées par le champ numéro union 
 ![MLD](/ScreenShot/Desktop/15_fusion_style.png)
 
 
-  #### <a id="plizmapD"> B - Paramètres Lizmap </a>
-[UP](#up)
+#### <a id="plizmapD"> B - Paramètres Lizmap </a> [UP](#up)
 
 ###### Paramétrage des actions
 * Edition
@@ -518,8 +496,20 @@ Les filtres géographique que nous souhaitons effectuer se font du côté des se
 ###### Paramétrage de l'affichage
 Les affichages dans les popups sont basés sur les affichages de [l'interface terrain](#affich).
 
-  #### <a id="usesD"> C - Utilisations </a>
+#### <a id="usesD"> C - Utilisations </a>`    `[up](#up)
 
 Avec cette interface, nous pouvons manipuler nos données et corriger les données provenant du terrain. Nous avons un contrôle et un accès total aux données de la base.
 
 ![MLD](/ScreenShot/Desktop/16_interface_desktop.png)
+
+&nbsp;
+&nbsp;
+
+-------------
+
+&nbsp;
+
+Corentin FALCONE / UE INRA Saint-Laurent-de-la-Prée
+
+![MLD](/ScreenShot/INRA_logo_small.jpg)
+<p style="text-align:right">Août - 2018</p>
