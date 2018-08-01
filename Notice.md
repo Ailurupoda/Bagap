@@ -249,7 +249,7 @@ Ici nous souhaitons avoir une vision simplifier des champs des couches d'observa
 
 #### <a id="usesF"> C - Utilisations </a>
 
-Cet application est très simple à utiliser, nous allons voir les différentes fonctionnalités et comment les atteindre.
+Cette application est très simple à utiliser, nous allons voir les différentes fonctionnalités et comment les atteindre.
 
 Les premiers éléments à regarder sont les couches géographiques, nous avons Lisière, Bordures, Surfaces et les parcelles fusionnées. Ces dernières ont la même symbologie que Surfaces puisqu'elles complètent les informations.
 
@@ -497,6 +497,78 @@ Les filtres géographique que nous souhaitons effectuer se font du côté des se
 Les affichages dans les popups sont basés sur les affichages de [l'interface terrain](#affich).
 
 #### <a id="usesD"> C - Utilisations </a>`    `[up](#up)
+
+Dans cette interface, les premières entités que l'on peut constater, sont les lisières, bordures et parcelles de toutes nos zones, ainsi que les ponctuels indiquant les couches fusionnées.
+
+![MLD](/ScreenShot/Desktop/Use/01_visu_couches.png)
+
+Lorsque l'on recherche les observations d'une session, il faut commencer par saisir la date de la session voulue, puis sélectionner la couche contenant la légende qui nous intéresse.
+1. Sélection de la date de la session dans l'outil de localisation par couche.
+2. Sélection de la couche à afficher. Les couches sont surlignées en jaune pour montrer qu'elles sont filtrées.
+Ici, nous visualisons l'occupation du sol des parcelles.
+![MLD](/ScreenShot/Desktop/Use/03_ocs.png)
+L'image suivante montre la visualisation  de l'état des parcelles.
+![MLD](/ScreenShot/Desktop/Use/04_etats.png)
+
+Les cinqs images suivantes montrent les entretiens observés sur les bordures concernant respectivement la strate herbacée, strate arbustive, strate arborée, haie et celles où l'on a constaté aucun entretien.
+![MLD](/ScreenShot/Desktop/Use/05_herbacée.png)
+![MLD](/ScreenShot/Desktop/Use/06_arbustive.png)
+![MLD](/ScreenShot/Desktop/Use/07_arborée.png)
+![MLD](/ScreenShot/Desktop/Use/08_haies.png)
+![MLD](/ScreenShot/Desktop/Use/15_autre.png)
+
+Nous pouvons de la même façon que pour l'interface terrain, éditer les observations.
+
+Nous allons maintenant voir comment effecteur la fusion des parcelles.
+Pour commencer, il faut se rendre dans l'onglet d'édition et sélectionner la couche "Fusions".
+
+Le formulaire présente alors deux champs à renseigner et la géométrie à créer sur la carte. Le champ "Numéro d'union", qui permet de regrouper les parcelles, possède une valeur par défaut correspondant à la dernière insertion dans la base. Ici, le 4 signifie que l'on va ajouter une entité qui fusionnera les parcelles possédant ce même numéro.
+
+![MLD](/ScreenShot/Desktop/Use/09_fusion.png)
+![MLD](/ScreenShot/Desktop/Use/10_fusion_2.png)
+
+Pour fusionner de nouvelles parcelles, nous commençons donc par attribuer un nouveau numéro : 5, puis nous ajoutons un point sur la première parcelle à fusionner. Étant donné que c'est la première parcelle du groupe numéro 5, c'est elle qui va servir de référence. En sauvegardant le formulaire, l'entité est créée.
+![MLD](/ScreenShot/Desktop/Use/11_fusion_3.png)
+
+Afin de fusionner cette parcelle avec celle voisine, nous ajoutons de la même façon un point en faisant bien attention de garder le numéro 5 en numéro d'union.
+
+![MLD](/ScreenShot/Desktop/Use/12_fusion_4.png)
+
+Une fois les ponctuels de fusion renseignés, nous pouvons visualiser la couche mv_fusion_surface qui est l'union des géométries à fusionner. Ainsi, en bleu, nous avons des entités regroupées.
+
+![MLD](/ScreenShot/Desktop/Use/13_fusion_5.png)
+
+Avec cette application, toutes les données de la base peuvent être visualisées, ajoutées, supprimées ou modifiées.
+
+Dans l'onglet "Table attributaire", nous avons la liste des tables de la base dont nous pouvons voir les valeurs. Il est aussi possible dans cet onglet d'éditer la donnée.
+
+![MLD](/ScreenShot/Desktop/Use/14_attributaire.png)
+
+Il est ainsi possible de regarder les informations concernant les bordures. En cliquant sur une bordure, cela permet de faire apparaitre les observations associées depuis le début du suivi.
+1. Informations des Bordures
+2. Liste des observations de la bordure sélectionné.
+
+![MLD](/ScreenShot/Desktop/Use/16_bordure_attri.png)
+
+De la même façon on peut suivre les observations des Parcelles.
+1. Informations des Parcelles
+2. Liste des observations associées à la Parcelle.
+
+![MLD](/ScreenShot/Desktop/Use/17_obs_surface.png)
+
+La fenêtre de table attributaire rend possible l'édition des couches. Pour l'exemple, nous avons sélectionné la couche "Etat session", nous avons ainsi les différents état présent actuellement dans la base.
+1. En cliquant sur ce bouton, nous pouvons ajouter un nouveau type d'état pour une session.
+2. Ce bouton est utilisé pour modifier les valeurs de la table.
+3. Ici, nous supprimons la valeur. Une valeur ne peut être supprimé seulement lorsqu'elle n'est pas rattaché à une autre donnée de la base.
+
+![MLD](/ScreenShot/Desktop/Use/18_attri_mod_entité.png)
+
+Il est également possible d'ajouter une nouvelle donnée en accédant à l'onglet d'édition. En sélectionnant la couche pour laquelle on souhaite ajouter une valeur, et en cliquant sur le bouton "ajouter", le formulaire apparait et il suffit de remplir les champs et de valider l'édition.
+
+![MLD](/ScreenShot/Desktop/Use/19_adding_entite.png)
+
+&nbsp;
+&nbsp;
 
 Avec cette interface, nous pouvons manipuler nos données et corriger les données provenant du terrain. Nous avons un contrôle et un accès total aux données de la base.
 
