@@ -23,6 +23,13 @@ Cette notice détail la démarche et le fonctionnement des applications créées
   * [QGIS](#pqgisD)
   * [Lizmap](#plizmapD)
   * [Utilisation](#usesD)
+* [Paramétrage GeoPoppy](#gpp)
+  * [Préparation des projets](#gp_proj)
+  * [Création de la base](#gp_base)
+  * [Ajout du module de synchronisation](#gp_sync)
+* [Synchronisation](#sync)
+  * [Interface GeoPoppy](#syn_gpp)
+  * [Interface serveur](#syn_serv)
 
 ***
 ### <a id="sql">I) SQL</a>
@@ -506,11 +513,15 @@ Lorsque l'on recherche les observations d'une session, il faut commencer par sai
 1. Sélection de la date de la session dans l'outil de localisation par couche.
 2. Sélection de la couche à afficher. Les couches sont surlignées en jaune pour montrer qu'elles sont filtrées.
 Ici, nous visualisons l'occupation du sol des parcelles.
+
 ![MLD](/ScreenShot/Desktop/Use/03_ocs.png)
+
 L'image suivante montre la visualisation  de l'état des parcelles.
+
 ![MLD](/ScreenShot/Desktop/Use/04_etats.png)
 
 Les cinqs images suivantes montrent les entretiens observés sur les bordures concernant respectivement la strate herbacée, strate arbustive, strate arborée, haie et celles où l'on a constaté aucun entretien.
+
 ![MLD](/ScreenShot/Desktop/Use/05_herbacée.png)
 ![MLD](/ScreenShot/Desktop/Use/06_arbustive.png)
 ![MLD](/ScreenShot/Desktop/Use/07_arborée.png)
@@ -528,6 +539,7 @@ Le formulaire présente alors deux champs à renseigner et la géométrie à cr�
 ![MLD](/ScreenShot/Desktop/Use/10_fusion_2.png)
 
 Pour fusionner de nouvelles parcelles, nous commençons donc par attribuer un nouveau numéro : 5, puis nous ajoutons un point sur la première parcelle à fusionner. Étant donné que c'est la première parcelle du groupe numéro 5, c'est elle qui va servir de référence. En sauvegardant le formulaire, l'entité est créée.
+
 ![MLD](/ScreenShot/Desktop/Use/11_fusion_3.png)
 
 Afin de fusionner cette parcelle avec celle voisine, nous ajoutons de la même façon un point en faisant bien attention de garder le numéro 5 en numéro d'union.
@@ -573,6 +585,127 @@ Il est également possible d'ajouter une nouvelle donnée en accédant à l'ongl
 Avec cette interface, nous pouvons manipuler nos données et corriger les données provenant du terrain. Nous avons un contrôle et un accès total aux données de la base.
 
 ![MLD](/ScreenShot/Desktop/16_interface_desktop.png)
+
+### <a id="gpp">IV) Paramétrage GeoPoppy</a>`    `[up](#up)
+
+Après avoir préparer la base de données et les projets Lizmap sur le serveur, il faut les paramétrer sur le Raspberry afin de pouvoir utiliser les outils sur le terrain sans connexion.
+
+#### <a id="gp_base"> B - Création de la base</a> `    `[up](#up)
+
+Pour commencer l'utilisation des outils sur le terrain, il faut préparer la base de données sur le Raspberry. Pour cela nous suivons les étapes suivante :
+
+1. Créer la base de données
+
+  Lorsque l'on configure GeoPoppy, nous avons tous les outils de créés, il nous suffit de rajouter notre base de données "bagap" d'un simple requête SQL:
+  `CREATE DATABASE bagap TEMPLATE template_postgis;`
+
+2. Utiliser le backup de la base de données
+
+  Ensuite, nous récupérons un backup de la base de données sur le serveur central, puis nous l'utilisons pour restaurer la base sur le serveur GeoPoppy.
+
+3. Ajouter les privilèges à l'utilisateur Terrain
+
+  Etant donné que nous avons un utilisateur particulier dans notre base, nous devons lui ajouter ses privilèges à la main, ici nous acceptons qu'il ai tous les privilèges, nous utilisons donc la commande `GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public to terrain;`.
+  Si un nouveau schéma est créé, il faut lui donner également les droits sur ce schema en plus des tables: `GRANT ALL PRIVILEGES ON SCHEMA mon_schema TO terrain`.
+
+#### <a id="gp_proj"> A - Préparation des projets</a> `    `[up](#up)
+Deux étapes sont nécessaire pour utiliser les outils sur le raspberry :
+
+1. Modifier les coordonnées de la base de données.
+
+  La base de données étant située dans un conteneur sur le Raspberry et non plus sur le serveur principal, il faut redéfinir certains paramètres. Pour ce faire, on ouvre les fichiers de projet QGIS dans un éditeur de texte et on utilise les outils chercher/remplacer sur les champs suivant :
+
+  * host
+
+  * port
+
+  * user
+
+  * password
+
+2. Envois des projet par NextCloud
+
+  Une fois les projets prêt à être utiliser sur le Raspberry, nous les déposons dans les dossiers locaux à l'aide de NextCloud, situé à l'adresse: `black-pearl.local:8000`
+
+Ensuite, on test les interfaces Lizmap pour vérifier que tous c'est bien installé correctement.
+#### <a id="gp_sync"> C - Ajout du module de synchronisation</a> `    `[up](#up)
+
+Une dernière étape importante pour l'utilisation des outils avec GeoPoppy, est l'installation du module de synchronisation. Pour ce faire, deux scripts sont présent ici : `ag` . Il suffis de les lancer dans notre base de données pour créer les fonctionnalités de synchronisation.
+
+L'un est à lancer sur le serveur central et créé un nouveau schéma __"sync"__ avec :
+* doreplay - *Table*
+* sauv_data - *Table*
+* conflict - *Vue*
+* no_replay - *Vue*
+* replay - *Vue*
+* ts_excluded - *Vue*
+
+L'autre est à lancer sur le serveur GeoPoppy, il créé également le schéma __"sync"__ avec :
+* login - *Table*
+* sauv_data - *Table*
+* synchro - *Table*
+
+Des triggers sont également créés sur les tables de la base pour enregistrer les changements effectués dans la base.
+
+### <a id="sync"> V) Synchronisation </a>`    `[up](#up)
+Pour utiliser la synchronisation de données, nous avons deux interfaces, une connecté au Raspberry, récupérant les données pour les envoyer sur le central, et l'autre sur le central, enregistrant les données provenant du Raspberry. La synchronisation des données se fait en deux temps, on commence par envoyer les données dans
+Nous allons détailler ici le fonctionnement de ces applications.
+
+#### <a id="syn_gpp"> A - Interface GeoPoppy </a> `    `[up](#up)
+L'interface pour GeoPoppy comprend les trois couches __login__, __sauv_data__ et __synchro__.
+![MLD](/ScreenShot/Sync/GeoPoppy/01_sync_couches.png)
+* *login* permet la création d'une connexion au serveur. Cette connexion sera appelé plus tard pour diriger les données vers le serveur que l'on souhaite.
+* *sauv_data* récupère les données au format json avec les informations utilisateur.
+* *synchro* permet d'effectuer la synchronisation en envoyant les données contenues dans sauv_data sur le serveur sélectionné.
+
+Toutes les couches sont ajouté à la table attributaire afin de visualiser les données avant et après lancement de la synchronisation.
+![MLD](/ScreenShot/Sync/GeoPoppy/02_sync_attri.png)
+
+Seulement synchro et login sont éditable.
+
+![MLD](/ScreenShot/Sync/GeoPoppy/03_sync_edit.png)
+
+Sur l'interface Lizmap, on a la possibilité de visualiser les données concernant les connexion, les données à synchroniser et les données déjà synchronisées, ainsi que les synchronisations réalisée avec les date de réalisation.
+
+![MLD](/ScreenShot/Sync/GeoPoppy/04_liz_attri.png)
+
+Avant de synchroniser, si nous n'avons pas encore de connexion, il faut en créer une en renseignant un alias  (c'est lui qui sera afficher par la suite), l'adresse du serveur, le port, le nom de l'utilisateur de la base de données, son mot de passe et le nom de la base.
+
+![MLD](/ScreenShot/Sync/GeoPoppy/07_liz_serveur.png)
+
+La synchronisation peut maintenant être lancé, en ajoutant une entité liée à la connexion souhaitée. La date du jour est entrée automatiquement et une valeur booléenne montre la validation de la synchronisation.
+
+![MLD](/ScreenShot/Sync/GeoPoppy/08_liz_synchro.png)
+#### <a id="syn_serv"> B - Interface serveur </a> `    `[up](#up)
+
+Du côté de l'application de côté du serveur central, nous avons les couches suivantes:
+![MLD](/ScreenShot/Sync/Serveur/01_couches_sync.png)
+* *doreplay* est utilisé pour rejouer les données et les insérer dans la base de données.
+* *sauv_data* est la table où sont stockées les actions réalisées sur le terrain.
+* *ts_excluded*
+* *replay* stock les données à rejouer parmi celles provenant du terrain.
+* *no_replay* stock les données qu'il ne faut pas rejouer.
+* *conflict* stock les données étant en conflit et où une intervention est nécessaire.
+
+Toutes les couches à l'exception de ts_excluded sont utilisées dans les tables attributaire.
+![MLD](/ScreenShot/Sync/Serveur/02_table attribu_sync.png)
+
+*doreplay* est ajoutée en édition avec seulement la possibilité d'ajouter une donnée. C'est à l'ajout d'une donnée dans cette table que la synchronisation se lance, une modification n'est donc pas utile.
+*conflitct* est également ajouté à l'édition, mais seulement en modification et en suppression pour sélectionner la donnée à synchroniser.
+
+![MLD](/ScreenShot/Sync/Serveur/03_edition_couches.png)
+
+Ainsi, sur Lizmap, nous avons accès dans la fenêtre de table attributaire aux données à insérées, à ne pas insérer, en conflits, le listing de toutes les synchronisation effectuées, et le listing des action effectuées provenant des autres serveur.
+
+![MLD](/ScreenShot/Sync/Serveur/05_liz_attributaire.png)
+
+La finalisation de la synchronisation s'effectue dans l'onglet d'édition en ajoutant une entité à la table *doreplay*. Aucune valeur n'est demandé, seul la date du jour sera ajoutée et une valeur booléenne précisant la réussite ou l’échec de cette synchronisation.
+
+![MLD](/ScreenShot/Sync/Serveur/06_liz_doreplay.png)
+
+Cette dernière image montre l'interface de synchronisation du serveur dans sa globalité.
+![MLD](/ScreenShot/Sync/Serveur/07_interface_sync.png)
+
 
 &nbsp;
 &nbsp;
