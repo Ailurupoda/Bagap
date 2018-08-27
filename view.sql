@@ -13,7 +13,7 @@
 --1/ Vue matérialisée listant les zones avec la géométrie globale
 --*********************************************************
 	--Materialized view contour des zones
-Drop materialized view mv_zone;
+Drop materialized view public.mv_zone;
 CREATE materialized view mv_zone as
 	(Select 'zone_a' as zone_id,
 		st_union(tA) as _zone_geom
@@ -35,7 +35,7 @@ CREATE materialized view mv_zone as
 --2/ Informationd es session pour afficher les données sans les id
 --*********************************************************
 	--Récupération des données session
-Create Or Replace view v_mod_session as
+Create Or Replace view public.v_mod_session as
 	Select 
 		ses_id,
 		date,
@@ -51,7 +51,7 @@ Create Or Replace view v_mod_session as
 --3/ Information des bordures pour affiche les données sans les id
 --*********************************************************
 	--Récupération des données bordure
-Create Or Replace view v_mod_bordure as
+Create Or Replace view public.v_mod_bordure as
 Select
 	bor_id,
 	lis_code,
@@ -238,7 +238,7 @@ CREATE OR REPLACE VIEW public.v_observation_bordure_tot AS
 --*********************************************************
   --Observation surface courante
   	--Valeurs courantes ou précédentes (si !courante)
-CREATE OR REPLACE VIEW v_observation_surface AS
+CREATE OR REPLACE VIEW public.v_observation_surface AS
 	Select 
 		ROW_NUMBER() OVER() as unique_id,
 		os.obsurf_id as vobs_id,
@@ -271,7 +271,7 @@ CREATE OR REPLACE VIEW v_observation_surface AS
 --7/ Observation des surfaces totales
 --*********************************************************
 	--Observation_surface total
-CREATE OR REPLACE VIEW v_observation_surface_tot AS
+CREATE OR REPLACE VIEW public.v_observation_surface_tot AS
 	Select 
 		ROW_NUMBER() OVER() as unique_id,
 		os.obsurf_id as vobs_id,
@@ -302,7 +302,7 @@ CREATE OR REPLACE VIEW v_observation_surface_tot AS
 --8/ Observation des des parcelles fusionnées actuelle ou de la dernière session
 --*********************************************************
 	--Observation des parcelles fusionnées
-CREATE OR REPLACE VIEW v_observation_fusion AS
+CREATE OR REPLACE VIEW public.v_observation_fusion AS
 	Select 
 		ROW_NUMBER() OVER() as unique_id,
 		os.obsurf_id as vobs_id,
@@ -331,10 +331,10 @@ CREATE OR REPLACE VIEW v_observation_fusion AS
 
 
 --*********************************************************
---5/ Vue matérialisée des parcelles fusionnées 
+--9/ Vue matérialisée des parcelles fusionnées 
 --*********************************************************
 	--Vue matérialisée récupérant la geom union des fusions
-Create materialized view mv_fusion_surface as
+Create materialized view public.mv_fusion_surface as
 	Select 
 		hf_surf_ref,
 		st_union(surf_geom) as surf_geom

@@ -307,23 +307,12 @@ Create User Terrain;
 ALTER USER Terrain WITH PASSWORD 'terrain';
 		
 --Attribution du droit de visualisation de toutes les données
-Grant Select On All Tables in Schema public to Terrain;
-	-- Attribution de l'insertion et édition sur la table observation_surface
-Grant UPDATE on public.observation_surface to Terrain;
-Grant INSERT on public.observation_surface to Terrain;
-Grant DELETE on public.observation_surface to Terrain;
 
-Grant UPDATE on public.v_observation_surface to Terrain;
-Grant INSERT on public.v_observation_surface to Terrain;
-Grant DELETE on public.v_observation_surface to Terrain;
-	-- Attribution de l'insertion et édition sur la table observation_bordure
-Grant UPDATE on public.observation_bordure to Terrain;
-Grant INSERT on public.observation_bordure to Terrain;
-Grant DELETE on public.observation_bordure to Terrain;
+grant all privileges on all tables in schema public to terrain;
 
-Grant UPDATE on public.v_observation_bordure to Terrain;
-Grant INSERT on public.v_observation_bordure to Terrain;
-Grant DELETE on public.v_observation_bordure to Terrain;
+grant all privileges on all tables in schema sync to terrain;
+
+grant all privileges on all sequences in schema public to terrain;
 	-- Attribution de l'insertion et édition sur la table session
 Grant UPDATE on public.session to Terrain;
 Grant INSERT on public.session to Terrain;
@@ -331,3 +320,18 @@ Grant INSERT on public.session to Terrain;
 GRANT EXECUTE on ALL functions in SCHEMA public to terrain;
 	--Attribution de l'utilisation des séquences
 GRANT USAGE on ALL sequences in schema public to terrain;
+
+
+
+
+create user terrain;
+
+grant all privileges on all tables in schema public to terrain;
+
+grant all privileges on all tables in schema sync to terrain;
+
+grant all privileges on all sequences in schema public to terrain;
+
+grant all privileges on schema sync to terrain;
+
+grant all privileges on all functions in schema sync to terrain;

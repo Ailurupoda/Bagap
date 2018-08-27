@@ -476,7 +476,7 @@ Les entités de la couche fusion sont catégorisées par le champ numéro union 
 ![MLD](/ScreenShot/Desktop/15_fusion_style.png)
 
 
-#### <a id="plizmapD"> B - Paramètres Lizmap </a> [UP](#up)
+#### <a id="plizmapD"> B - Paramètres Lizmap </a> `   `[up](#up)
 
 ###### Paramétrage des actions
 * Edition
